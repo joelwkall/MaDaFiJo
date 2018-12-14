@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -10,7 +12,7 @@ public class PlayerController : MonoBehaviour {
     public float rateOfFire;
 
     private Rigidbody2D rb2d;   
-    private BoxCollider2D collider;
+    private BoxCollider2D boxCollider;
 
     private float timeSinceLastFire;
 
@@ -18,7 +20,7 @@ public class PlayerController : MonoBehaviour {
 	void Start () {
 		//Get and store a reference to the Rigidbody2D component so that we can access it.
         rb2d = GetComponent<Rigidbody2D>();
-        collider = GetComponent<BoxCollider2D>();
+        boxCollider = GetComponent<BoxCollider2D>();
 	}
 	
 	//FixedUpdate is called at a fixed interval and is independent of frame rate. Put physics code here.
@@ -34,14 +36,23 @@ public class PlayerController : MonoBehaviour {
         if (Mathf.Abs(rb2d.velocity.x + movement.x) < maxSpeed)
             rb2d.AddForce (movement * speedMultiplier);
 
+        //jump
         if (Input.GetButton("Jump"))
         {
-            var jumpMovement = new Vector2(0, jumpStrength);
-            rb2d.AddForce(jumpMovement);
+            var bottomOfPlayer = transform.position + new Vector3(0, -((boxCollider.size.y/2)+0.05f));
+
+            RaycastHit2D hit = Physics2D.Raycast(bottomOfPlayer, Vector3.down, 0.05f);
+
+            if (hit)
+            {
+                var jumpMovement = new Vector2(0, jumpStrength);
+                rb2d.AddForce(jumpMovement);
+            }
         }
 
         timeSinceLastFire += Time.deltaTime;
 
+        //fire bullets
         if(Input.GetMouseButton(0) && timeSinceLastFire > rateOfFire)
         {
             var go = new GameObject("Bullet");
@@ -52,7 +63,9 @@ public class PlayerController : MonoBehaviour {
             go.transform.position = rb2d.position;
 
             var bulletCollider = go.AddComponent<CircleCollider2D>();
-            Physics2D.IgnoreCollision(collider, bulletCollider);
+            //ignore collision with player. We could fix this by having bullets spawn
+            //just outside the player instead
+            Physics2D.IgnoreCollision(boxCollider, bulletCollider);
 
             timeSinceLastFire = 0;
         }
