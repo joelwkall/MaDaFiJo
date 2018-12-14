@@ -1,0 +1,20 @@
+{
+	"rateOfFire":1,
+	"mainProjectileName":"bullet",
+	"speed":500,
+	"speedVariance":0,
+	"spread":0,
+	
+	"projectiles":{
+		"bullet":{
+			"appearance":{
+				"shape":"circle",
+				"color":"#000000",
+				"radius":0.1
+			},
+			"physics":{
+				"mass":1.0
+			}
+		}
+	}
+}
