@@ -526,9 +526,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 864a5e66b401ba748a18da4adb82bcfa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speedMultiplier: 10
-  maxSpeed: 5
-  jumpStrength: 20
+  speedMultiplier: 40
+  maxSpeed: 7
+  jumpStrength: 150
   rateOfFire: 0.1
 --- !u!1 &822204608
 GameObject:
