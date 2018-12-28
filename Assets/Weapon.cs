@@ -5,11 +5,17 @@ using System.Text;
 
 namespace Assets
 {
+    //TODO: split this up into Weapon and ProjectileGenerator 
+    //(which can be reused for triggers)
     public class Weapon
     {
-        public float RateOfFire;
-        public float Speed;
+        public string Name;
+        public float FireDelay;
+        public float Force;
+
+        //TODO: implement these
         public float Spread;
+        public float ForceVariance;
 
         public string MainProjectileName;
 
@@ -28,22 +34,30 @@ namespace Assets
     {
         public ProjectileAppearance Appearance;
         public ProjectilePhysics Physics;
+
+        //TODO: triggers, such as time, interval, collision
+        //actions can be destroy, spawn, or modify physics (such as changing speed or direction)
     }
 
     public enum ProjectileShapes
     {
-        Circle
+        Circle,
+        Rectangle
     }
 
     public class ProjectileAppearance
     {
         public ProjectileShapes Shape;
         public string Color;
-        public float Radius;
+        //TODO: use width and height for cirles too, since they can be ellipses
+        public float Radius; //used for circle
+        public float Width; //used for rectangle
+        public float Height; //used for rectangle
     }
 
     public class ProjectilePhysics
     {
         public float Mass;
+        //TODO: bounce, friction etc
     }
 }

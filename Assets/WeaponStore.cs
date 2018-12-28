@@ -11,7 +11,7 @@ namespace Assets
     [InitializeOnLoad]
     class WeaponStore
     {
-        public static IDictionary<string,Weapon> Weapons { get; private set; }
+        public static IList<Weapon> Weapons { get; private set; }
 
         static WeaponStore()
         {
@@ -20,7 +20,7 @@ namespace Assets
                 .Where(p => Path.GetExtension(p).Equals(".json", StringComparison.OrdinalIgnoreCase))
                 .ToArray();
 
-            var weapons = new Dictionary<string, Weapon>(files.Length);
+            var weapons = new List<Weapon>(files.Length);
 
             foreach (var file in files)
             {
@@ -31,7 +31,9 @@ namespace Assets
                     var weapon = JsonConvert.DeserializeObject<Weapon>(text);
                     var name = Path.GetFileNameWithoutExtension(file);
 
-                    weapons.Add(name, weapon);
+                    weapon.Name = name;
+
+                    weapons.Add(weapon);
                 }
             }
 

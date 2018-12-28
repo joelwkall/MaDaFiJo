@@ -1,0 +1,19 @@
+{
+	"fireDelay": 0.1,
+	"mainProjectileName": "rocket",
+	"force": 40,
+
+	"projectiles": {
+		"rocket": {
+			"appearance": {
+				"shape": "rectangle",
+				"color": "#005500",
+				"width": 0.3,
+				"height": 0.08
+			},
+			"physics": {
+				"mass": 0.1
+			}
+		}
+	}
+}
