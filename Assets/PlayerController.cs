@@ -92,9 +92,12 @@ public class PlayerController : MonoBehaviour {
         //fire bullets
         if (Input.GetMouseButton(0) && _timeSinceLastFire > _currentWeapon.FireDelay)
         {
+            var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var diff = new Vector2(mouse.x, mouse.y) - _rb2d.position;
+
             var emitter = _currentWeapon.ProjectileEmitter;
 
-            emitter.EmitProjectile(_boxCollider, _rb2d);
+            emitter.EmitProjectile(_boxCollider, _rb2d, diff);
 
             _timeSinceLastFire = 0;
         }

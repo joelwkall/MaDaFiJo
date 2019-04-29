@@ -35,7 +35,24 @@ namespace Assets
                         var name = Path.GetFileNameWithoutExtension(file);
 
                         weapon.Name = name;
+
+                        //populate weapon for emitter so it can find projectiles
                         weapon.ProjectileEmitter.Weapon = weapon;
+
+                        //populate weapon for all nested emitters
+                        foreach (var projectile in weapon.Projectiles.Values)
+                        {
+                            if (projectile.Events != null)
+                            {
+                                foreach (var e in projectile.Events)
+                                {
+                                    if (e.Action.Type == ProjectileAction.ActionTypes.Emit)
+                                    {
+                                        e.Action.ProjectileEmitter.Weapon = weapon;
+                                    }
+                                }
+                            }
+                        }
 
                         //TODO: validate all data
 

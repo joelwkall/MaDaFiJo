@@ -1,7 +1,7 @@
 {
-	"fireDelay": 0.1,
-	
-	"projectileEmitter":{
+	"fireDelay": 1,
+
+	"projectileEmitter": {
 		"projectileName": "rocket",
 		"force": 40,
 	},
@@ -15,8 +15,50 @@
 				"height": 0.08
 			},
 			"physics": {
-				"mass": 0.1
-			}
+				"mass": 0.1,
+				"bounciness": 0.2
+			},
+			"events": [{
+					"trigger": {
+						"type": "Interval",
+						"interval": 0.01,
+						"start": 0.2,
+						"end": 3
+					},
+					"action": {
+						"type": "emit",
+						"projectileEmitter": {
+							"projectileName": "smoke",
+							"force": -3,
+							"spread": 0.1,
+							"forceVariance": 0.1
+						}
+					}
+				}
+			]
+		},
+		"smoke": {
+			"appearance": {
+				"shape": "circle",
+				"color": "#555555",
+				"radius": 0.2
+			},
+			"physics": {
+				"mass": 0.01,
+				"gravity":-0.5,
+				"solid":false
+			},
+			"events": [{
+					"trigger": {
+						"type": "Interval",
+						"interval": 1,
+						"start": 1,
+						"end": 1.1
+					},
+					"action": {
+						"type": "destroy"
+					}
+			}]
 		}
 	}
 }

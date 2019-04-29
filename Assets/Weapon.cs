@@ -18,6 +18,8 @@ namespace Assets
     {
         public float Force;
 
+        //TODO: maybe all floats should be a pair of number+variance?
+
         public float Spread; //0 means no spread, 1 means 180 degree spread in both directions
         public float ForceVariance; //0 means no variance, 1 means between 10% - 1000% force
 
@@ -30,7 +32,7 @@ namespace Assets
             get { return Weapon.Projectiles[ProjectileName]; }
         }
 
-        public void EmitProjectile(BoxCollider2D parentCollider, Rigidbody2D parentBody2D)
+        public void EmitProjectile(BoxCollider2D parentCollider, Rigidbody2D parentBody2D, Vector2 direction)
         {
             var go = new GameObject("Projectile");
 
@@ -38,10 +40,14 @@ namespace Assets
             projectileController.Projectile = EmittedProjectile;
             go.transform.position = parentBody2D.position;
 
-            var bulletCollider = go.AddComponent<CircleCollider2D>();
-            //ignore collision with parent. We could fix this by having bullets spawn
-            //just outside the player instead
-            Physics2D.IgnoreCollision(parentCollider, bulletCollider);
+            if (EmittedProjectile.Physics.Solid)
+            {
+                //TODO: boxcollider and other shapes
+                var bulletCollider = go.AddComponent<CircleCollider2D>();
+                //ignore collision with parent. We could fix this by having bullets spawn
+                //just outside the player instead
+                Physics2D.IgnoreCollision(parentCollider, bulletCollider);
+            }
 
             var projRb2d = go.AddComponent<Rigidbody2D>();
             projRb2d.sharedMaterial = new PhysicsMaterial2D()
@@ -49,11 +55,10 @@ namespace Assets
                 bounciness = EmittedProjectile.Physics.Bounciness,
                 friction = EmittedProjectile.Physics.Friction
             };
+            projRb2d.gravityScale = EmittedProjectile.Physics.Gravity;
 
-            var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var diff = new Vector2(mouse.x, mouse.y) - parentBody2D.position;
             var rotationSpread = Spread * Random.Range(-180f, 180f);
-            var vector = diff.normalized.Rotate(rotationSpread);
+            var vector = direction.normalized.Rotate(rotationSpread);
             var forceSpread = (ForceVariance * Random.Range(-0.9f, 10f)) * Force;
 
             projRb2d.AddForce(vector * (Force + forceSpread));
@@ -76,34 +81,88 @@ namespace Assets
         public ProjectileAppearance Appearance;
         public ProjectilePhysics Physics;
 
-        //TODO: triggers, such as time, interval, collision
-        //actions can be destroy, spawn, or modify physics (such as changing speed or direction)
+        public List<ProjectileEvent> Events;
+
+        //TODO: triggers, such as time, interval, collision (different types?)
+        //actions can be destroy, emit, modify physics or appearance. adding force is done by emitting backwards?
     }
 
-    public enum ProjectileShapes
+    public class ProjectileEvent
     {
-        Circle,
-        Rectangle
+        public ProjectileTrigger Trigger;
+        //TODO: multiple actions
+        public ProjectileAction Action;
     }
+
+    public class ProjectileTrigger
+    {
+        public TriggerTypes Type;
+
+        //interval
+        public float Interval;
+        public float Start;
+        public float End;
+
+        //TODO: collision
+
+        public enum TriggerTypes
+        {
+            Interval,
+            Collision
+        }
+    }
+
+    public class ProjectileAction
+    {
+        public ActionTypes Type;
+
+        //emit
+        public ProjectileEmitter ProjectileEmitter;
+
+        //TODO: other types
+
+        public enum ActionTypes
+        {
+            Destroy,
+            Emit,
+            ModifyPhysics,
+            ModifyAppearance
+        }
+    }
+
+    
 
     public class ProjectileAppearance
     {
-        public ProjectileShapes Shape;
+        public Shapes Shape;
         public string Color;
         //TODO: use width and height for cirles too, since they can be ellipses
         public float Radius; //used for circle
         public float Width; //used for rectangle
         public float Height; //used for rectangle
 
-        //TODO: add opacity
+        //TODO: add opacity, gradients, glow & other effects
+
+        public enum Shapes
+        {
+            Circle,
+            Rectangle,
+            //TODO: add more shapes
+        }
     }
 
     public class ProjectilePhysics
     {
-        public float Mass;
+        public float Mass = 1;
 
-        public float Bounciness;
-        public float Friction;
+        public float Bounciness = 1;
+        public float Friction = 1;
+
+        public float Gravity = 1;
+        public bool Solid = true;
+
         //TODO: drag
+
+        //gravity, collidable?
     }
 }

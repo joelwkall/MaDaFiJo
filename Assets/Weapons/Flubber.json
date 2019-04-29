@@ -1,11 +1,11 @@
 {
-	"fireDelay": 0.1,
-	
-	"projectileEmitter":{
+	"fireDelay": 0.5,
+
+	"projectileEmitter": {
 		"projectileName": "flubber",
 		"force": 20,
-		"spread":0.1,
-		"forceVariance":0.1
+		"spread": 0.1,
+		"forceVariance": 0.1
 	},
 
 	"projectiles": {
@@ -17,8 +17,8 @@
 			},
 			"physics": {
 				"mass": 0.1,
-				"bounciness":1,
-				"friction":0
+				"bounciness": 1,
+				"friction": 0
 			}
 		}
 	}
