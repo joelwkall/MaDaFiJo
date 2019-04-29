@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using Extensions;
 
 namespace Assets
 {
@@ -26,6 +28,40 @@ namespace Assets
         public Projectile EmittedProjectile
         {
             get { return Weapon.Projectiles[ProjectileName]; }
+        }
+
+        public void EmitProjectile(BoxCollider2D parentCollider, Rigidbody2D parentBody2D)
+        {
+            var go = new GameObject("Projectile");
+
+            var projectileController = go.AddComponent<ProjectileController>();
+            projectileController.Projectile = EmittedProjectile;
+            go.transform.position = parentBody2D.position;
+
+            var bulletCollider = go.AddComponent<CircleCollider2D>();
+            //ignore collision with parent. We could fix this by having bullets spawn
+            //just outside the player instead
+            Physics2D.IgnoreCollision(parentCollider, bulletCollider);
+
+            var projRb2d = go.AddComponent<Rigidbody2D>();
+
+            var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            var diff = new Vector2(mouse.x, mouse.y) - parentBody2D.position;
+            var rotationSpread = Spread * Random.Range(-180f, 180f);
+            var vector = diff.normalized.Rotate(rotationSpread);
+            var forceSpread = (ForceVariance * Random.Range(-0.9f, 10f)) * Force;
+
+            projRb2d.AddForce(vector * (Force + forceSpread));
+
+            var rotation = Vector2.Angle(vector, Vector2.right);
+
+            projRb2d.MoveRotation(rotation);
+
+            //recoil
+            parentBody2D.AddForce(-vector * Force);
+
+            //add renderer
+            go.AddComponent<SpriteRenderer>();
         }
     }
 

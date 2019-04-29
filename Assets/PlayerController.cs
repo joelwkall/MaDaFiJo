@@ -92,38 +92,9 @@ public class PlayerController : MonoBehaviour {
         //fire bullets
         if (Input.GetMouseButton(0) && _timeSinceLastFire > _currentWeapon.FireDelay)
         {
-            var go = new GameObject("Projectile");
-
-            var projectileController = go.AddComponent<ProjectileController>();
             var emitter = _currentWeapon.ProjectileEmitter;
-            projectileController.Projectile = emitter.EmittedProjectile;
-            
-            go.transform.position = _rb2d.position;
-            
-            var bulletCollider = go.AddComponent<CircleCollider2D>();
-            //ignore collision with player. We could fix this by having bullets spawn
-            //just outside the player instead
-            Physics2D.IgnoreCollision(_boxCollider, bulletCollider);
 
-            var projRb2d = go.AddComponent<Rigidbody2D>();
-
-            var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            var diff = new Vector2(mouse.x, mouse.y) - _rb2d.position;
-            var rotationSpread = emitter.Spread * Random.Range(-180f, 180f);
-            var vector = diff.normalized.Rotate(rotationSpread);
-            var forceSpread = (emitter.ForceVariance * Random.Range(-0.9f, 10f)) * emitter.Force;
-
-            projRb2d.AddForce(vector * (emitter.Force + forceSpread));
-
-            var rotation = Vector2.Angle(vector, Vector2.right);
-
-            projRb2d.MoveRotation(rotation);
-
-            //recoil
-            _rb2d.AddForce(-vector * emitter.Force);
-
-            //add renderer
-            go.AddComponent<SpriteRenderer>();
+            emitter.EmitProjectile(_boxCollider, _rb2d);
 
             _timeSinceLastFire = 0;
         }
