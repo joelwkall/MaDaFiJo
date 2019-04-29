@@ -1,13 +1,16 @@
 {
 	"fireDelay": 0.1,
-	"mainProjectileName": "rocket",
-	"force": 40,
+	
+	"projectileEmitter":{
+		"projectileName": "rocket",
+		"force": 40,
+	},
 
 	"projectiles": {
 		"rocket": {
 			"appearance": {
 				"shape": "rectangle",
-				"color": "#005500",
+				"color": "#008800",
 				"width": 0.3,
 				"height": 0.08
 			},

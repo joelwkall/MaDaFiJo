@@ -26,14 +26,24 @@ namespace Assets
             {
                 using (var reader = new StreamReader(file))
                 {
-                    var text = reader.ReadToEnd();
+                    try
+                    {
+                        var text = reader.ReadToEnd();
 
-                    var weapon = JsonConvert.DeserializeObject<Weapon>(text);
-                    var name = Path.GetFileNameWithoutExtension(file);
+                        var weapon = JsonConvert.DeserializeObject<Weapon>(text);
+                        var name = Path.GetFileNameWithoutExtension(file);
 
-                    weapon.Name = name;
+                        weapon.Name = name;
+                        weapon.ProjectileEmitter.Weapon = weapon;
 
-                    weapons.Add(weapon);
+                        //TODO: validate all data
+
+                        weapons.Add(weapon);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Error when importing weapon file " + file + ": " + ex.Message + ".", ex);
+                    }
                 }
             }
 

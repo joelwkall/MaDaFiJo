@@ -1,7 +1,12 @@
 {
 	"fireDelay": 0.02,
-	"mainProjectileName": "bullet",
-	"force": 10,
+	
+	"projectileEmitter":{
+		"projectileName": "bullet",
+		"force": 15,
+		"spread":0.01,
+		"forceVariance":0.01
+	},
 
 	"projectiles": {
 		"bullet": {
@@ -11,7 +16,7 @@
 				"radius": 0.1
 			},
 			"physics": {
-				"mass": 0.03
+				"mass": 0.02
 			}
 		}
 	}

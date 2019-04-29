@@ -1,32 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Assets
 {
-    //TODO: split this up into Weapon and ProjectileGenerator 
-    //(which can be reused for triggers)
     public class Weapon
     {
         public string Name;
         public float FireDelay;
-        public float Force;
 
-        //TODO: implement these
-        public float Spread;
-        public float ForceVariance;
-
-        public string MainProjectileName;
+        public ProjectileEmitter ProjectileEmitter;
 
         public Dictionary<string, Projectile> Projectiles;
+    }
 
-        public Projectile MainProjectile
+    public class ProjectileEmitter
+    {
+        public float Force;
+
+        public float Spread; //0 means no spread, 1 means 180 degree spread in both directions
+        public float ForceVariance; //0 means no variance, 1 means between 10% - 1000% force
+
+        public string ProjectileName;
+
+        public Weapon Weapon;
+
+        public Projectile EmittedProjectile
         {
-            get
-            {
-                return Projectiles[MainProjectileName];
-            }
+            get { return Weapon.Projectiles[ProjectileName]; }
         }
     }
 
@@ -53,6 +52,8 @@ namespace Assets
         public float Radius; //used for circle
         public float Width; //used for rectangle
         public float Height; //used for rectangle
+
+        //TODO: add opacity
     }
 
     public class ProjectilePhysics
