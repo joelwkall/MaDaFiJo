@@ -15,6 +15,7 @@ namespace Assets
 
         static WeaponStore()
         {
+            //TODO: re-import whenever a file changes
             string path = "Assets/Weapons";
             var files = Directory.GetFiles(path)
                 .Where(p => Path.GetExtension(p).Equals(".json", StringComparison.OrdinalIgnoreCase))

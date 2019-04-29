@@ -44,6 +44,11 @@ namespace Assets
             Physics2D.IgnoreCollision(parentCollider, bulletCollider);
 
             var projRb2d = go.AddComponent<Rigidbody2D>();
+            projRb2d.sharedMaterial = new PhysicsMaterial2D()
+            {
+                bounciness = EmittedProjectile.Physics.Bounciness,
+                friction = EmittedProjectile.Physics.Friction
+            };
 
             var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var diff = new Vector2(mouse.x, mouse.y) - parentBody2D.position;
@@ -55,6 +60,7 @@ namespace Assets
 
             var rotation = Vector2.Angle(vector, Vector2.right);
 
+            //TODO: this gives the wrong angle when firing downward
             projRb2d.MoveRotation(rotation);
 
             //recoil
@@ -95,6 +101,9 @@ namespace Assets
     public class ProjectilePhysics
     {
         public float Mass;
-        //TODO: bounce, friction etc
+
+        public float Bounciness;
+        public float Friction;
+        //TODO: drag
     }
 }

@@ -45,7 +45,8 @@ public class ProjectileController : MonoBehaviour {
     {
         lifeTime += Time.deltaTime;
 
-        if (lifeTime > 1)
+        //TODO: adjustable lifetime? or controlled by events
+        if (lifeTime > 10)
             Destroy(gameObject);
     }
 }

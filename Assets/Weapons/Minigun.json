@@ -16,7 +16,8 @@
 				"radius": 0.1
 			},
 			"physics": {
-				"mass": 0.02
+				"mass": 0.02,
+				"friction":100
 			}
 		}
 	}
