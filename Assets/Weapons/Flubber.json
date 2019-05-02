@@ -3,9 +3,8 @@
 
 	"projectileEmitter": {
 		"projectileName": "flubber",
-		"force": 20,
-		"spread": 0.1,
-		"forceVariance": 0.1
+		"force": {"range":[10,20]},
+		"spread": 0.1
 	},
 
 	"projectiles": {

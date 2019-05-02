@@ -31,15 +31,18 @@ public class ProjectileController : MonoBehaviour {
             color = Color.red;
 
         renderer.color = color;
+
+        renderer.sortingOrder = 10;
         
         rb2d = GetComponent<Rigidbody2D>();
         rb2d.mass = Projectile.Physics.Mass;
     }
 
     private Dictionary<int,float> _intervalTriggered = new Dictionary<int, float>();
-	
-	// Update is called once per frame
-	void Update ()
+    private Dictionary<int, float> _collisionTriggered = new Dictionary<int, float>();
+
+    // Update is called once per frame
+    void Update ()
     {
         if (Projectile.Events == null)
             return;
@@ -51,33 +54,71 @@ public class ProjectileController : MonoBehaviour {
             bool triggered = false;
             if (e.Trigger.Type == ProjectileTrigger.TriggerTypes.Interval)
             {
-                if (e.Trigger.Start < lifeTime && e.Trigger.End > lifeTime)
+                var hasStarted = e.Trigger.Start == null || e.Trigger.Start.GetNumber() < lifeTime;
+                var hasEnded = e.Trigger.End != null && e.Trigger.End.GetNumber() < lifeTime;
+
+                if (hasStarted && !hasEnded)
                 {
-                    if (!_intervalTriggered.ContainsKey(i) || _intervalTriggered[i] + e.Trigger.Interval < lifeTime)
+                    //no interval, just trigger once and never again
+                    if (e.Trigger.Interval == null)
+                    {
+                        triggered = true;
+                        _intervalTriggered[i] = float.MaxValue;
+                    }
+                    else if (!_intervalTriggered.ContainsKey(i) || _intervalTriggered[i] + e.Trigger.Interval.GetNumber() < lifeTime)
                     {
                         triggered = true;
                         _intervalTriggered[i] = lifeTime;
                     }
                 }
             }
-            //TODO: support other trigger types
 
             if (!triggered)
                 continue;
 
-            if (e.Action.Type == ProjectileAction.ActionTypes.Emit)
+            TriggerAction(e);
+        }
+    }
+
+    private void TriggerAction(ProjectileEvent e)
+    {
+        foreach (var action in e.Actions)
+        {
+            if (action.Type == ProjectileAction.ActionTypes.Emit)
             {
                 var rotationRadians = rb2d.rotation * (Mathf.PI / 180f);
                 var direction = new Vector2(Mathf.Cos(rotationRadians), Mathf.Sin(rotationRadians));
-                e.Action.ProjectileEmitter.EmitProjectile(GetComponent<BoxCollider2D>(), rb2d, direction);
+                action.ProjectileEmitter.EmitProjectiles(GetComponent<BoxCollider2D>(), rb2d, direction);
             }
-            else if (e.Action.Type == ProjectileAction.ActionTypes.Destroy)
+            else if (action.Type == ProjectileAction.ActionTypes.Destroy)
             {
                 Destroy(gameObject);
             }
-            //TODO: support other action types
         }
-	}
+
+        //TODO: support other action types
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (Projectile.Events == null)
+            return;
+
+        for (var i = 0; i < Projectile.Events.Count; i++)
+        {
+            var e = Projectile.Events[i];
+            if (e.Trigger.Type == ProjectileTrigger.TriggerTypes.Collision)
+            {
+                //make sure we dont trigger collisions too often
+                if (!_collisionTriggered.ContainsKey(i) || _collisionTriggered[i] + 0.1 < lifeTime)
+                {
+                    TriggerAction(e);
+                    _collisionTriggered[i] = lifeTime;
+                }
+                
+            }
+        }
+    }
 
     void FixedUpdate()
     {

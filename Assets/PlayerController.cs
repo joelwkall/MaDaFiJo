@@ -90,6 +90,7 @@ public class PlayerController : MonoBehaviour {
         }
 
         //fire bullets
+        //TODO: change so it sets the time of next fire, so that you can switch from minigun to rockets and have it shoot instantly
         if (Input.GetMouseButton(0) && _timeSinceLastFire > _currentWeapon.FireDelay)
         {
             var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -97,9 +98,18 @@ public class PlayerController : MonoBehaviour {
 
             var emitter = _currentWeapon.ProjectileEmitter;
 
-            emitter.EmitProjectile(_boxCollider, _rb2d, diff);
+            emitter.EmitProjectiles(_boxCollider, _rb2d, diff);
 
             _timeSinceLastFire = 0;
+        }
+
+        //"respawn"
+        if (_rb2d.position.y < -50)
+        {
+            _rb2d.velocity = new Vector2(0f, 0f);
+            _rb2d.angularVelocity = 0;
+            _rb2d.rotation = 0;
+            _rb2d.MovePosition(new Vector2(0f, 0f));
         }
     }
 }

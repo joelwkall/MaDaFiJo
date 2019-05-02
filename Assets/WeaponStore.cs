@@ -11,15 +11,62 @@ namespace Assets
     [InitializeOnLoad]
     class WeaponStore
     {
+        private static readonly string path = "Assets/Weapons";
+
         public static IList<Weapon> Weapons { get; private set; }
+
+        private static FileSystemWatcher watcher;
 
         static WeaponStore()
         {
             //TODO: re-import whenever a file changes
-            string path = "Assets/Weapons";
+            
+            ImportWeapons();
+
+            watcher = new FileSystemWatcher();
+            
+            watcher.Path = path;
+
+            // Watch for changes in LastAccess and LastWrite times, and
+            // the renaming of files or directories.
+            watcher.NotifyFilter = NotifyFilters.LastWrite
+                                   | NotifyFilters.FileName
+                                   | NotifyFilters.LastAccess;
+
+            // Only watch text files.
+            watcher.Filter = "*.json";
+
+            // Add event handlers.
+            watcher.Changed += OnChanged;
+            watcher.Created += OnChanged;
+            watcher.Deleted += OnChanged;
+            watcher.Renamed += OnRenamed;
+
+            // Begin watching.
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private static void OnChanged(object source, FileSystemEventArgs e)
+        {
+            // Specify what is done when a file is changed, created, or deleted.
+            Debug.Log("File changed: " + e.FullPath);
+
+            ImportWeapons();
+        }
+
+        private static void OnRenamed(object source, RenamedEventArgs e)
+        {
+            // Specify what is done when a file is renamed.
+            Debug.Log("File renamed: " + e.FullPath);
+
+            ImportWeapons();
+        }
+
+        private static void ImportWeapons()
+        {
             var files = Directory.GetFiles(path)
-                .Where(p => Path.GetExtension(p).Equals(".json", StringComparison.OrdinalIgnoreCase))
-                .ToArray();
+                            .Where(p => Path.GetExtension(p).Equals(".json", StringComparison.OrdinalIgnoreCase))
+                            .ToArray();
 
             var weapons = new List<Weapon>(files.Length);
 
@@ -46,9 +93,12 @@ namespace Assets
                             {
                                 foreach (var e in projectile.Events)
                                 {
-                                    if (e.Action.Type == ProjectileAction.ActionTypes.Emit)
+                                    foreach (var action in e.Actions)
                                     {
-                                        e.Action.ProjectileEmitter.Weapon = weapon;
+                                        if (action.Type == ProjectileAction.ActionTypes.Emit)
+                                        {
+                                            action.ProjectileEmitter.Weapon = weapon;
+                                        }
                                     }
                                 }
                             }

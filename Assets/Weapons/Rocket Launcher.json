@@ -3,7 +3,9 @@
 
 	"projectileEmitter": {
 		"projectileName": "rocket",
-		"force": 40,
+		"force": {
+			"exact": 40
+		},
 	},
 
 	"projectiles": {
@@ -21,19 +23,59 @@
 			"events": [{
 					"trigger": {
 						"type": "Interval",
-						"interval": 0.01,
-						"start": 0.2,
-						"end": 3
-					},
-					"action": {
-						"type": "emit",
-						"projectileEmitter": {
-							"projectileName": "smoke",
-							"force": -3,
-							"spread": 0.1,
-							"forceVariance": 0.1
+						"interval": {
+							"exact": 0.01
+						},
+						"start": {
+							"exact": 0.4
+						},
+						"end": {
+							"exact": 3
 						}
-					}
+					},
+					"actions": [{
+							"type": "emit",
+							"projectileEmitter": {
+								"projectileName": "smoke",
+								"force": {
+									"range": [-2.5, -3.5]
+								},
+								"spread": 0.1
+							}
+						}
+					]
+				}, {
+					"trigger": {
+						"type": "Collision"
+					},
+					"actions": [{
+							"type": "emit",
+							"projectileEmitter": {
+								"projectileName": "orangefire",
+								"force": {
+									"range": [0.5, 2.5]
+								},
+								"spread": 1,
+								"amount": {
+									"range": [15, 50]
+								}
+							}
+						}, {
+							"type": "emit",
+							"projectileEmitter": {
+								"projectileName": "redfire",
+								"force": {
+									"range": [0.5, 2.1]
+								},
+								"spread": 1,
+								"amount": {
+									"range": [15, 50]
+								}
+							}
+						}, {
+							"type": "destroy"
+						}
+					]
 				}
 			]
 		},
@@ -45,20 +87,72 @@
 			},
 			"physics": {
 				"mass": 0.01,
-				"gravity":-0.5,
-				"solid":false
+				"gravity": -0.5,
+				"solid": false
 			},
 			"events": [{
 					"trigger": {
 						"type": "Interval",
-						"interval": 1,
-						"start": 1,
-						"end": 1.1
+						"start": {
+							"range": [0.5, 1.5]
+						}
 					},
-					"action": {
-						"type": "destroy"
-					}
-			}]
+					"actions": [{
+							"type": "destroy"
+						}
+					]
+				}
+			]
+		},
+		"orangefire": {
+			"appearance": {
+				"shape": "circle",
+				"color": "#ffaa00",
+				"radius": 0.25
+			},
+			"physics": {
+				"mass": 0.01,
+				"gravity": -0.1,
+				"solid": false
+			},
+			"events": [{
+					"trigger": {
+						"type": "Interval",
+						"start": {
+							"range": [0.4, 1.6]
+						}
+					},
+					"actions": [{
+							"type": "destroy"
+						}
+					]
+				}
+			]
+		},
+		"redfire": {
+			"appearance": {
+				"shape": "circle",
+				"color": "#ff0000",
+				"radius": 0.15
+			},
+			"physics": {
+				"mass": 0.01,
+				"gravity": -0.1,
+				"solid": false
+			},
+			"events": [{
+					"trigger": {
+						"type": "Interval",
+						"start": {
+							"range": [0.4, 1.6]
+						}
+					},
+					"actions": [{
+							"type": "destroy"
+						}
+					]
+				}
+			]
 		}
 	}
 }

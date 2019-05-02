@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Extensions;
+using Random = UnityEngine.Random;
 
 namespace Assets
 {
@@ -14,14 +16,41 @@ namespace Assets
         public Dictionary<string, Projectile> Projectiles;
     }
 
+    public class Number<T> where T : struct
+    {
+        public T? Exact;
+        public T[] Range;
+
+        public T GetNumber()
+        {
+            if (Range != null)
+            {
+                if (Range.Length != 2)
+                    throw new Exception("Range must have exactly 2 values.");
+
+                if (typeof(T) == typeof(float))
+                    return (T)(object)Random.Range((float)(object)Range[0], (float)(object)Range[1]);
+
+                if (typeof(T) == typeof(int))
+                    return (T)(object)Random.Range((int)(object)Range[0], (int)(object)Range[1]);
+
+                throw new Exception("Number must be of type int or float.");
+            }
+
+            if (Exact != null)
+                return Exact.Value;
+
+            throw new Exception("Either Exact or Range must be specified.");
+        }
+    }
+
     public class ProjectileEmitter
     {
-        public float Force;
+        public Number<int> Amount = new Number<int>{ Exact = 1 };
 
-        //TODO: maybe all floats should be a pair of number+variance?
+        public Number<float> Force;
 
         public float Spread; //0 means no spread, 1 means 180 degree spread in both directions
-        public float ForceVariance; //0 means no variance, 1 means between 10% - 1000% force
 
         public string ProjectileName;
 
@@ -32,47 +61,48 @@ namespace Assets
             get { return Weapon.Projectiles[ProjectileName]; }
         }
 
-        public void EmitProjectile(BoxCollider2D parentCollider, Rigidbody2D parentBody2D, Vector2 direction)
+        public void EmitProjectiles(BoxCollider2D parentCollider, Rigidbody2D parentBody2D, Vector2 direction)
         {
-            var go = new GameObject("Projectile");
-
-            var projectileController = go.AddComponent<ProjectileController>();
-            projectileController.Projectile = EmittedProjectile;
-            go.transform.position = parentBody2D.position;
-
-            if (EmittedProjectile.Physics.Solid)
+            for (var i = 0; i < Amount.GetNumber(); i++)
             {
-                //TODO: boxcollider and other shapes
-                var bulletCollider = go.AddComponent<CircleCollider2D>();
-                //ignore collision with parent. We could fix this by having bullets spawn
-                //just outside the player instead
-                Physics2D.IgnoreCollision(parentCollider, bulletCollider);
+                var go = new GameObject("Projectile");
+
+                var projectileController = go.AddComponent<ProjectileController>();
+                projectileController.Projectile = EmittedProjectile;
+                go.transform.position = parentBody2D.position;
+
+                if (EmittedProjectile.Physics.Solid)
+                {
+                    //TODO: boxcollider and other shapes
+                    var bulletCollider = go.AddComponent<CircleCollider2D>();
+                    //ignore collision with parent.
+                    Physics2D.IgnoreCollision(parentCollider, bulletCollider);
+                }
+
+                var projRb2d = go.AddComponent<Rigidbody2D>();
+                projRb2d.sharedMaterial = new PhysicsMaterial2D()
+                {
+                    bounciness = EmittedProjectile.Physics.Bounciness,
+                    friction = EmittedProjectile.Physics.Friction
+                };
+                projRb2d.gravityScale = EmittedProjectile.Physics.Gravity;
+
+                var rotationSpread = Spread * Random.Range(-180f, 180f);
+                var vector = direction.normalized.Rotate(rotationSpread);
+
+                projRb2d.AddForce(vector * (Force.GetNumber()));
+
+                var rotation = Vector2.Angle(vector, Vector2.right);
+
+                //TODO: this gives the wrong angle when firing downward
+                projRb2d.MoveRotation(rotation);
+
+                //recoil
+                parentBody2D.AddForce(-vector * Force.GetNumber());
+
+                //add renderer
+                go.AddComponent<SpriteRenderer>();
             }
-
-            var projRb2d = go.AddComponent<Rigidbody2D>();
-            projRb2d.sharedMaterial = new PhysicsMaterial2D()
-            {
-                bounciness = EmittedProjectile.Physics.Bounciness,
-                friction = EmittedProjectile.Physics.Friction
-            };
-            projRb2d.gravityScale = EmittedProjectile.Physics.Gravity;
-
-            var rotationSpread = Spread * Random.Range(-180f, 180f);
-            var vector = direction.normalized.Rotate(rotationSpread);
-            var forceSpread = (ForceVariance * Random.Range(-0.9f, 10f)) * Force;
-
-            projRb2d.AddForce(vector * (Force + forceSpread));
-
-            var rotation = Vector2.Angle(vector, Vector2.right);
-
-            //TODO: this gives the wrong angle when firing downward
-            projRb2d.MoveRotation(rotation);
-
-            //recoil
-            parentBody2D.AddForce(-vector * Force);
-
-            //add renderer
-            go.AddComponent<SpriteRenderer>();
         }
     }
 
@@ -82,16 +112,12 @@ namespace Assets
         public ProjectilePhysics Physics;
 
         public List<ProjectileEvent> Events;
-
-        //TODO: triggers, such as time, interval, collision (different types?)
-        //actions can be destroy, emit, modify physics or appearance. adding force is done by emitting backwards?
     }
 
     public class ProjectileEvent
     {
         public ProjectileTrigger Trigger;
-        //TODO: multiple actions
-        public ProjectileAction Action;
+        public ProjectileAction[] Actions;
     }
 
     public class ProjectileTrigger
@@ -99,11 +125,11 @@ namespace Assets
         public TriggerTypes Type;
 
         //interval
-        public float Interval;
-        public float Start;
-        public float End;
+        public Number<float> Interval;
+        public Number<float> Start;
+        public Number<float> End;
 
-        //TODO: collision
+        //TODO: different collision types?
 
         public enum TriggerTypes
         {
@@ -159,10 +185,10 @@ namespace Assets
         public float Friction = 1;
 
         public float Gravity = 1;
-        public bool Solid = true;
+        public bool Solid = true; //TODO: different collision types?
 
         //TODO: drag
 
-        //gravity, collidable?
+        //gravity?
     }
 }

@@ -3,9 +3,8 @@
 
 	"projectileEmitter": {
 		"projectileName": "bullet",
-		"force": 15,
-		"spread": 0.01,
-		"forceVariance": 0.01
+		"force": {"range":[14.99,15.01]},
+		"spread": 0.01
 	},
 
 	"projectiles": {
@@ -19,7 +18,46 @@
 				"mass": 0.02,
 				"friction": 100,
 				"bounciness": 0
-			}
+			},
+			"events": [{
+					"trigger": {
+						"type": "Collision"
+					},
+					"actions": [{
+						"type": "emit",
+						"projectileEmitter": {
+							"projectileName": "shrapnel",
+							"force": {"range":[0.01,0.11]},
+							"spread": 1,
+							"amount":{"range":[1,5]}
+						}
+					},
+					{
+						"type": "destroy"
+					}]
+				}
+			]
+		},
+		"shrapnel": {
+			"appearance": {
+				"shape": "circle",
+				"color": "#aaaaaa",
+				"radius": 0.05
+			},
+			"physics": {
+				"mass": 0.001,
+				"friction": 100,
+				"bounciness": 0
+			},
+			"events": [{
+					"trigger": {
+						"type": "Interval",
+						"start": {"range":[0.5,2.5]}
+					},
+					"actions": [{
+						"type": "destroy"
+					}]
+			}]
 		}
 	}
 }
