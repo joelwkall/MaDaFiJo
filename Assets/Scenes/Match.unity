@@ -529,7 +529,6 @@ MonoBehaviour:
   speedMultiplier: 40
   maxSpeed: 7
   jumpStrength: 150
-  rateOfFire: 0.1
 --- !u!1 &822204608
 GameObject:
   m_ObjectHideFlags: 0
