@@ -1,6 +1,5 @@
 ﻿using Assets;
 using System.Linq;
-using Extensions;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
@@ -47,8 +46,7 @@ public class PlayerController : MonoBehaviour {
 
             RaycastHit2D hit = Physics2D.Raycast(bottomOfPlayer, Vector3.down, 0.05f);
 
-            //TODO: make sure only ground counts (not projectiles)
-            if (hit)
+            if (hit && (hit.rigidbody == null || hit.rigidbody.gameObject == null || hit.rigidbody.gameObject.name != "Projectile"))
             {
                 var jumpMovement = new Vector2(0, jumpStrength);
                 _rb2d.AddForce(jumpMovement);
@@ -63,8 +61,7 @@ public class PlayerController : MonoBehaviour {
         {
             var pos = Camera.main.WorldToScreenPoint(transform.position);
 
-            //TODO: center text and make prettier. this is just an ugly hack
-            GUI.Label(new Rect(pos.x, Camera.main.pixelHeight-pos.y - 50, 100, 20), _currentWeapon.Name);
+            GUI.Label(new Rect(pos.x- 50, Camera.main.pixelHeight-pos.y - 50, 100, 20), _currentWeapon.Name, new GUIStyle(){alignment = TextAnchor.MiddleCenter});
         }
     }
 
@@ -90,7 +87,6 @@ public class PlayerController : MonoBehaviour {
         }
 
         //fire bullets
-        //TODO: change so it sets the time of next fire, so that you can switch from minigun to rockets and have it shoot instantly
         if (Input.GetMouseButton(0) && _timeSinceLastFire > _currentWeapon.FireDelay)
         {
             var mouse = Camera.main.ScreenToWorldPoint(Input.mousePosition);
