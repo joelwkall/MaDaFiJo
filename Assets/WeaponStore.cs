@@ -19,8 +19,6 @@ namespace Assets
 
         static WeaponStore()
         {
-            //TODO: re-import whenever a file changes
-            
             ImportWeapons();
 
             watcher = new FileSystemWatcher();
@@ -78,7 +76,7 @@ namespace Assets
                     {
                         var text = reader.ReadToEnd();
 
-                        var weapon = JsonConvert.DeserializeObject<Weapon>(text);
+                        var weapon = JsonConvert.DeserializeObject<Weapon>(text, new NumberConverter());
                         var name = Path.GetFileNameWithoutExtension(file);
 
                         weapon.Name = name;

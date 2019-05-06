@@ -1,5 +1,4 @@
 ﻿using Assets;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,12 +17,12 @@ public class ProjectileController : MonoBehaviour {
         if (Projectile.Appearance.Shape == ProjectileAppearance.Shapes.Circle)
         {
             renderer.sprite = Resources.Load("Sprites/Circle", typeof(Sprite)) as Sprite;
-            gameObject.transform.localScale = new Vector3(Projectile.Appearance.Radius, Projectile.Appearance.Radius);
+            gameObject.transform.localScale = new Vector3(Projectile.Appearance.Radius.GetNumber(), Projectile.Appearance.Radius.GetNumber());
         }
         else if (Projectile.Appearance.Shape == ProjectileAppearance.Shapes.Rectangle)
         {
             renderer.sprite = Resources.Load("Sprites/Square", typeof(Sprite)) as Sprite;
-            gameObject.transform.localScale = new Vector3(Projectile.Appearance.Width, Projectile.Appearance.Height);
+            gameObject.transform.localScale = new Vector3(Projectile.Appearance.Width.GetNumber(), Projectile.Appearance.Height.GetNumber());
         }
 
         Color color;
@@ -115,7 +114,6 @@ public class ProjectileController : MonoBehaviour {
                     TriggerAction(e);
                     _collisionTriggered[i] = lifeTime;
                 }
-                
             }
         }
     }
@@ -123,9 +121,8 @@ public class ProjectileController : MonoBehaviour {
     void FixedUpdate()
     {
         lifeTime += Time.deltaTime;
-
-        //TODO: adjustable lifetime? or controlled by events
-        if (lifeTime > 10)
+        
+        if (lifeTime > 20)
             Destroy(gameObject);
     }
 }
