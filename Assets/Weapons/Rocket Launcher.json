@@ -3,7 +3,7 @@
 
 	"projectileEmitter": {
 		"projectileName": "rocket",
-		"force": 40,
+		"force": 40
 	},
 
 	"projectiles": {

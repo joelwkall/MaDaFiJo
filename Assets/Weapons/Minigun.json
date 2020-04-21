@@ -23,18 +23,20 @@
 					"trigger": {
 						"type": "Collision"
 					},
-					"actions": [{
-						"type": "emit",
-						"projectileEmitter": {
-							"projectileName": "shrapnel",
-							"force": [0.01,0.11],
-							"spread": 1,
-							"amount":[1,5]
+					"actions": [
+						{
+							"type": "destroy"
+						},
+						{
+							"type": "emit",
+							"projectileEmitter": {
+								"projectileName": "shrapnel",
+								"force": [ 0.01, 0.11 ],
+								"spread": 1,
+								"amount": [ 1, 5 ]
+							}
 						}
-					},
-					{
-						"type": "destroy"
-					}]
+					]
 				}
 			]
 		},
@@ -47,12 +49,13 @@
 			"physics": {
 				"mass": 0.001,
 				"friction": 100,
-				"bounciness": 0
+				"bounciness": 0,
+				"solid": false
 			},
 			"events": [{
 					"trigger": {
 						"type": "Interval",
-						"start": [0.5,2.5]
+						"start": [0.5,2.5]
 					},
 					"actions": [{
 						"type": "destroy"
