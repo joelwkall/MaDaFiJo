@@ -12,12 +12,12 @@
 			"appearance": {
 				"shape": "circle",
 				"color": "#0000AA",
-				"radius": 0.4
+				"radius": [0.3, 0.5]
 			},
 			"physics": {
 				"mass": 0.1,
 				"bounciness": 1,
-				"friction": 0
+				"friction": 0.1
 			}
 		}
 	}

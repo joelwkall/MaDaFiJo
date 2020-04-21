@@ -1,1 +1,4 @@
 # MaDaFiJo
+
+## TODO
+- Events

@@ -79,6 +79,8 @@ namespace Assets
                 //add renderer
                 go.AddComponent<SpriteRenderer>();
             }
+
+            //TODO: should parent loose mass? what happens when it reaches 0?
         }
     }
 
@@ -137,6 +139,8 @@ namespace Assets
         public Shapes Shape;
         public string Color;
         //TODO: use width and height for cirles too, since they can be ellipses
+        //NOPE: because if the radius is a range we dont want to random generate 2. so we need to differentiate between circles and ellipses
+        //same thing with square I think
         public Number<float> Radius; //used for circle
         public Number<float> Width; //used for rectangle
         public Number<float> Height; //used for rectangle
@@ -147,7 +151,7 @@ namespace Assets
         {
             Circle,
             Rectangle,
-            //TODO: add more shapes
+            //TODO: add more shapes (triangle, ellipse, square?)
         }
     }
 
